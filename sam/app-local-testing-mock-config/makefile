@@ -1,7 +1,9 @@
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
-
+UUID:=/proc/sys/kernel/random/uuid
 run:
 	docker run -p 8083:8083 \
+	--name StepFunctionsLocalcontainer \
+	--env-file aws-stepfunctions-local-credentials.txt \
   	--mount type=bind,readonly,source=$(ROOT_DIR)/statemachine/test/MockConfigFile.json,destination=/home/StepFunctionsLocal/MockConfigFile.json \
   	-e SFN_MOCK_CONFIG="/home/StepFunctionsLocal/MockConfigFile.json" \
   	amazon/aws-stepfunctions-local
@@ -37,6 +39,10 @@ exception:
 		--state-machine arn:aws:states:us-east-1:123456789012:stateMachine:LocalTesting#ValidationExceptionCatchTest \
 		--input file://events/sfn_valid_input.json \
 		--no-cli-pager
+
+happy-stop:
+
+
 
 retry:
 	aws stepfunctions start-execution \
